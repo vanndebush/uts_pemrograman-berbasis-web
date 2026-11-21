@@ -1,41 +1,36 @@
 // * real-time date and time
-setInterval(function() {
-  const time = new Date();
-  const date = time.getDate();
-  const month = time.getMonth();
-  const year = time.getFullYear();
-  const hours = time.getHours();
-  const minutes = time.getMinutes();
-  const seconds = time.getSeconds();
-  const fullDate = `${date}/${month + 1}/${year}`;
-  const fullTime = `${hours}:${minutes}:${seconds}`;
+const dateEl = document.querySelector('.date');
+const timeEl = document.querySelector('.time');
 
-  document.querySelector('.date').textContent = fullDate;
-  document.querySelector('.time').textContent = fullTime;
-}, 1000);
+const updateDateTime = () => {
+  const time = new Date();
+
+  const date = String(time.getDate()).padStart(2, '0');
+  const month = String(time.getMonth() + 1).padStart(2, '0');
+  const year = time.getFullYear();
+
+  const hours = String(time.getHours()).padStart(2, '0');
+  const minutes = String(time.getMinutes()).padStart(2, '0');
+  const seconds = String(time.getSeconds()).padStart(2, '0');
+
+  dateEl.textContent = `${date}/${month}/${year}`;
+  timeEl.textContent = `${hours}:${minutes}:${seconds}`;
+};
+
+updateDateTime();
+setInterval(updateDateTime, 1000);
 
 // * back to top
 const backToTop = document.getElementById('back-to-top');
-window.addEventListener('scroll', function() {
-  if (window.scrollY >= 200) {
-    backToTop.classList.remove('d-none');
-    backToTop.classList.add('d-block');
-  } else {
-    backToTop.classList.remove('d-block');
-    backToTop.classList.add('d-none');
-  }
-});
-backToTop.addEventListener('click', function() {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
-});
+
+window.addEventListener('scroll', () => backToTop.classList.toggle('d-none', window.scrollY < 200));
+backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
 // * theme toggle
 const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = themeToggle.querySelector('i');
 
-themeToggle.addEventListener('click', function() {
+const setTheme = isDark => {
   const navbar = document.querySelector('.navbar');
   const hero = document.getElementById('hero');
   const articles = document.getElementById('articles');
@@ -44,85 +39,62 @@ themeToggle.addEventListener('click', function() {
   const profile = document.getElementById('profile');
   const footer = document.querySelector('footer');
 
-  if (document.body.classList.contains('light-theme')) {
-    document.body.classList.remove('light-theme');
-    document.body.classList.add('dark-theme');
+  document.body.classList.toggle('dark-theme', isDark);
+  document.body.classList.toggle('light-theme', !isDark);
 
-    navbar.classList.remove('bg-body-tertiary');
-    navbar.classList.add('bg-dark', 'navbar-dark');
+  navbar.classList.toggle('bg-dark', isDark);
+  navbar.classList.toggle('navbar-dark', isDark);
+  navbar.classList.toggle('bg-body-tertiary', !isDark);
 
-    themeToggle.classList.remove('btn-dark');
-    themeToggle.classList.add('btn-light');
-    themeToggle.innerHTML = '<i class="bi bi-moon"></i>';
-    themeToggle.title = 'Switch to Light Theme';
-
-    hero.classList.remove('bg-secondary-subtle');
-    hero.classList.add('bg-secondary', 'text-light');
-
-    articles.classList.add('bg-dark', 'text-light');
-    articles.querySelectorAll('.card').forEach(card => card.classList.add('bg-secondary', 'text-light'));
-    articles.querySelectorAll('small').forEach(small => {
-      small.classList.remove('text-body-secondary');
-      small.classList.add('text-light');
-    });
-
-    gallery.classList.remove('bg-body-tertiary');
-    gallery.classList.add('bg-dark-subtle', 'text-black');
-
-    schedule.classList.add('bg-dark', 'text-light');
-    schedule.querySelectorAll('.card').forEach(card => {
-      card.classList.remove('text-bg-light');
-      card.classList.add('bg-secondary', 'text-light');
-    });
-    schedule.querySelectorAll('.card-header').forEach(cardHeader => cardHeader.classList.add('text-black'));
-
-    profile.classList.remove('bg-body-tertiary');
-    profile.classList.add('bg-dark-subtle', 'text-black');
-
-    footer.classList.add('bg-dark', 'text-light');
-    footer.querySelectorAll('a').forEach(e => {
-      e.classList.remove('text-black');
-      e.classList.add('text-light');
-    });
-  } else {
-    document.body.classList.remove('dark-theme');
-    document.body.classList.add('light-theme');
-
-    navbar.classList.remove('bg-dark', 'navbar-dark');
-    navbar.classList.add('bg-body-tertiary');
-
-    themeToggle.classList.remove('btn-light');
-    themeToggle.classList.add('btn-dark');
-    themeToggle.innerHTML = '<i class="bi bi-sun"></i>';
-    themeToggle.title = 'Switch to Dark Theme';
-
-    hero.classList.remove('bg-secondary', 'text-light');
-    hero.classList.add('bg-secondary-subtle');
-
-    articles.classList.remove('bg-dark', 'text-light');
-    articles.querySelectorAll('.card').forEach(card => card.classList.remove('bg-secondary', 'text-light'));
-    articles.querySelectorAll('small').forEach(small => {
-      small.classList.remove('text-light');
-      small.classList.add('text-body-secondary');
-    });
-
-    gallery.classList.remove('bg-dark-subtle', 'text-black');
-    gallery.classList.add('bg-body-tertiary');
-
-    schedule.classList.remove('bg-dark', 'text-light');
-    schedule.querySelectorAll('.card').forEach(card => {
-      card.classList.remove('bg-secondary', 'text-light');
-      card.classList.add('text-bg-light');
-    });
-    schedule.querySelectorAll('.card-header').forEach(cardHeader => cardHeader.classList.remove('text-black'));
-
-    profile.classList.remove('bg-dark-subtle', 'text-black');
-    profile.classList.add('bg-body-tertiary');
-
-    footer.classList.remove('bg-dark', 'text-light');
-    footer.querySelectorAll('a').forEach(e => {
-      e.classList.remove('text-light');
-      e.classList.add('text-black');
-    });
+  themeToggle.classList.toggle('btn-light', isDark);
+  themeToggle.classList.toggle('btn-dark', !isDark);
+  themeToggle.title = isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme';
+  if (themeIcon) {
+    themeIcon.classList.toggle('bi-moon', isDark);
+    themeIcon.classList.toggle('bi-sun', !isDark);
   }
+
+  hero.classList.toggle('bg-secondary', isDark);
+  hero.classList.toggle('text-light', isDark);
+  hero.classList.toggle('bg-secondary-subtle', !isDark);
+
+  articles.classList.toggle('bg-dark', isDark);
+  articles.classList.toggle('text-light', isDark);
+  articles.querySelectorAll('.card').forEach(card => {
+    card.classList.toggle('bg-secondary', isDark);
+    card.classList.toggle('text-light', isDark);
+  });
+  articles.querySelectorAll('small').forEach(small => {
+    small.classList.toggle('text-light', isDark);
+    small.classList.toggle('text-body-secondary', !isDark);
+  });
+
+  gallery.classList.toggle('bg-dark-subtle', isDark);
+  gallery.classList.toggle('text-black', isDark);
+  gallery.classList.toggle('bg-body-tertiary', !isDark);
+
+  schedule.classList.toggle('bg-dark', isDark);
+  schedule.classList.toggle('text-light', isDark);
+  schedule.querySelectorAll('.card').forEach(card => {
+    card.classList.toggle('bg-secondary', isDark);
+    card.classList.toggle('text-light', isDark);
+    card.classList.toggle('text-bg-light', !isDark);
+  });
+  schedule.querySelectorAll('.card-header').forEach(cardHeader => cardHeader.classList.toggle('text-black', isDark));
+
+  profile.classList.toggle('bg-dark-subtle', isDark);
+  profile.classList.toggle('text-black', isDark);
+  profile.classList.toggle('bg-body-tertiary', !isDark);
+
+  footer.classList.toggle('bg-dark', isDark);
+  footer.classList.toggle('text-light', isDark);
+  footer.querySelectorAll('a').forEach(link => {
+    link.classList.toggle('text-light', isDark);
+    link.classList.toggle('text-black', !isDark);
+  });
+};
+
+themeToggle.addEventListener('click', () => {
+  const isDark = document.body.classList.contains('dark-theme');
+  setTheme(!isDark);
 });
